@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10182b">
+  <meta name="description" content="Voyage en orbite phénéthylaminienne — récit personnel d'une expérience partagée au bord du lac de Vouglans.">
+  <title>Voyage en orbite phénéthylaminienne</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f4f2ff;
+      --muted: #c2c5dc;
+      --paper: rgba(19, 27, 49, .82);
+      --line: rgba(206, 205, 255, .15);
+      --lavender: #c9b8ff;
+      --mint: #a8ead7;
+      --gold: #f5d99a;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 0 16px 64px;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 12% 8%, rgba(105, 91, 177, .28), transparent 34rem),
+        radial-gradient(ellipse at 92% 35%, rgba(58, 137, 131, .17), transparent 32rem),
+        linear-gradient(160deg, #0b1222 0%, #111a30 48%, #10182a 100%);
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", serif;
+      line-height: 1.82;
+      overflow-x: hidden;
+    }
+    .sky {
+      position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
+      isolation: isolate;
+    }
+    .sky::before {
+      content: ""; position: absolute; inset: -25%;
+      background:
+        conic-gradient(from 210deg at 48% 48%, transparent 0 22%, rgba(116,83,210,.12) 29%, transparent 38% 54%, rgba(55,205,190,.10) 64%, transparent 76%),
+        radial-gradient(ellipse at 50% 42%, rgba(117,91,205,.10), transparent 54%);
+      filter: blur(34px); opacity: .8;
+      animation: aurora-flow 32s ease-in-out infinite alternate;
+    }
+    .star {
+      position: absolute; width: 3px; height: 3px; border-radius: 50%;
+      background: #fff; opacity: .55; box-shadow: 0 0 12px 2px rgba(215, 211, 255, .55);
+      animation: twinkle 4.5s ease-in-out infinite;
+    }
+    .star.small { width: 2px; height: 2px; animation-duration: 6.8s; }
+    .star.bright { width: 4px; height: 4px; box-shadow: 0 0 17px 4px rgba(206,195,255,.8); animation-duration: 3.2s; }
+    .orbit {
+      position: absolute; width: 290px; height: 170px; border: 1px solid rgba(196, 184, 255, .19);
+      border-radius: 50%; top: 14%; right: -145px; transform: rotate(-28deg);
+      animation: orbit-drift 24s ease-in-out infinite alternate;
+    }
+    .orbit::before, .orbit::after {
+      content: ""; position: absolute; border: 1px solid rgba(168, 234, 215, .15); border-radius: 50%;
+      inset: -28px 25px; transform: rotate(58deg);
+    }
+    .orbit::after { inset: 28px -35px; transform: rotate(-38deg); }
+    .orbit .orbiter {
+      position: absolute; left: 13%; top: 12%; width: 7px; height: 7px; border-radius: 50%;
+      background: #d9d0ff; box-shadow: 0 0 15px 5px rgba(190,174,255,.75);
+      transform-origin: 110px 70px; animation: orbit-point 13s linear infinite;
+    }
+    .orbit.second {
+      width: 360px; height: 210px; top: 61%; right: auto; left: -220px;
+      border-color: rgba(112,224,207,.13); animation-duration: 31s;
+    }
+    .orbit.second .orbiter {
+      left: 48%; top: -2%; background: #a8f4e4;
+      box-shadow: 0 0 16px 5px rgba(105,235,210,.72); animation-duration: 18s;
+    }
+    .nebula {
+      position: absolute; width: 300px; height: 300px; border-radius: 50%;
+      filter: blur(55px); opacity: .19; mix-blend-mode: screen;
+      animation: nebula-drift 26s ease-in-out infinite alternate;
+    }
+    .nebula.one { left: -130px; top: 32%; background: #9b7cff; }
+    .nebula.two { right: -150px; top: 68%; width: 340px; height: 340px; background: #62d8c0; animation-delay: -9s; }
+    .nebula.three { width: 230px; height: 230px; right: 12%; top: 8%; background: #7762d8; opacity: .12; animation-delay: -15s; }
+    .particle {
+      position: absolute; width: 3px; height: 3px; border-radius: 50%;
+      background: #d8f8f2; opacity: 0; box-shadow: 0 0 10px 2px rgba(133,232,218,.7);
+      animation: particle-float var(--duration, 19s) ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+    }
+    .shooting-star {
+      position: absolute; top: 22%; left: -25%; width: 150px; height: 2px;
+      opacity: 0; transform: rotate(-24deg);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.98), transparent);
+      filter: drop-shadow(0 0 7px rgba(210,205,255,1));
+      animation: shooting 11s linear infinite;
+    }
+    .shooting-star::after {
+      content: ""; position: absolute; right: 42px; top: -2px; width: 5px; height: 5px;
+      border-radius: 50%; background: white; box-shadow: 0 0 13px 4px rgba(224,220,255,.9);
+    }
+    .shooting-star.two { top: 67%; animation-delay: -6s; animation-duration: 16s; transform: rotate(-18deg) scale(.75); }
+    @keyframes aurora-flow {
+      from { transform: translate3d(-4%, -2%, 0) rotate(-8deg) scale(.92); }
+      to { transform: translate3d(5%, 4%, 0) rotate(9deg) scale(1.12); }
+    }
+    @keyframes nebula-drift {
+      from { transform: translate3d(-8px,-24px,0) scale(.82); }
+      to { transform: translate3d(70px,38px,0) scale(1.18); }
+    }
+    @keyframes particle-float {
+      0% { opacity: 0; transform: translate3d(0, 24px, 0) scale(.6); }
+      18% { opacity: .72; }
+      55% { opacity: .35; transform: translate3d(24px,-42vh,0) scale(1.15); }
+      100% { opacity: 0; transform: translate3d(-18px,-86vh,0) scale(.5); }
+    }
+    @keyframes shooting {
+      0%, 68% { opacity: 0; transform: translate3d(0,0,0) rotate(-24deg); }
+      70% { opacity: 1; }
+      80% { opacity: 0; transform: translate3d(155vw,42vh,0) rotate(-24deg); }
+      100% { opacity: 0; }
+    }
+    @keyframes twinkle { 0%,100% { opacity:.18; transform:scale(.72); } 50% { opacity:1; transform:scale(1.45); } }
+    @keyframes orbit-drift { from { translate: 0 -12px; rotate: -7deg; } to { translate: -28px 24px; rotate: 8deg; } }
+    @keyframes orbit-point { from { transform: rotate(0deg) translateX(110px) rotate(0deg); } to { transform: rotate(360deg) translateX(110px) rotate(-360deg); } }
+
+    .page { width: min(100%, 790px); margin: 0 auto; }
+    header { text-align: center; padding: 66px 4px 34px; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 9px; margin-bottom: 18px;
+      color: var(--mint); font: 600 .72rem/1.4 system-ui, sans-serif;
+      letter-spacing: .19em; text-transform: uppercase;
+    }
+    .eyebrow::before, .eyebrow::after { content:""; width: 22px; height:1px; background: currentColor; opacity:.65; }
+    h1 {
+      max-width: 720px; margin: 0 auto 12px; font-size: clamp(2.15rem, 8vw, 4.35rem);
+      line-height: 1.08; letter-spacing: -.045em; font-weight: 500;
+      text-wrap: balance;
+      background: linear-gradient(115deg, #fff 12%, #d9ccff 54%, #a8ead7 100%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .subtitle {
+      margin: 0; color: #d6d1ee; font: 500 clamp(.92rem, 3.4vw, 1.08rem)/1.5 system-ui, sans-serif;
+      letter-spacing: .035em;
+    }
+    .ornament { display:flex; align-items:center; justify-content:center; gap:12px; margin: 26px auto 0; color:var(--gold); }
+    .ornament span { width: 54px; height:1px; background: linear-gradient(90deg, transparent, currentColor); opacity:.6; }
+    .ornament span:last-child { transform:scaleX(-1); }
+    .ornament b { font-size: 1rem; font-weight:400; }
+
+    main {
+      position: relative; padding: clamp(22px, 5vw, 52px) clamp(18px, 6vw, 58px);
+      border: 1px solid var(--line); border-radius: 24px;
+      background: var(--paper); box-shadow: 0 24px 90px rgba(0,0,0,.24);
+      backdrop-filter: blur(12px);
+    }
+    .story p { margin: 0 0 1.55em; font-size: clamp(1.02rem, 2.6vw, 1.13rem); }
+    .story p:last-child { margin-bottom: 0; }
+    .story .standalone {
+      color: #f0dcff; font-style: italic; text-align: center; font-size: 1.12em;
+      margin: 1.8em 0 1.9em;
+    }
+    .story .chapter-space { margin-top: 2em; }
+    .story .closing {
+      margin: 2.4em 0 .3em; text-align: right; color: #e4d8ff;
+      font-size: 1.08rem; font-style: italic; letter-spacing: .02em;
+    }
+    .disclaimer {
+      width: min(88%, 570px); margin: 28px 0 40px auto; padding: 18px 20px 19px;
+      border: 1px solid rgba(245,217,154,.28); border-right: 3px solid rgba(245,217,154,.72);
+      border-radius: 16px 5px 16px 16px; background: rgba(43, 39, 54, .62);
+      color: #d8d4df; font: italic .82rem/1.7 system-ui, sans-serif;
+    }
+    .disclaimer strong {
+      display:block; margin-bottom:7px; color:var(--gold); font-size:.76rem;
+      font-style:normal; letter-spacing:.13em;
+    }
+    footer { padding: 28px 0 0; text-align:center; color:rgba(205,207,227,.55); font: .72rem/1.5 system-ui,sans-serif; letter-spacing:.08em; }
+    @media (min-width: 700px) {
+      body { padding-inline: 28px; }
+      header { padding-top: 84px; padding-bottom: 42px; }
+      main { border-radius: 30px; }
+      .story p { margin-bottom: 1.65em; }
+    }
+    @media (max-width: 420px) {
+      body { padding-inline: 11px; padding-bottom: 42px; line-height:1.76; }
+      header { padding-top: 48px; }
+      main { padding: 23px 18px; border-radius: 19px; }
+      .disclaimer { width: 94%; margin-bottom: 40px; padding: 15px 16px; font-size: .77rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sky" aria-hidden="true">
+    <span class="star bright" style="top:8%;left:12%;animation-delay:.2s"></span>
+    <span class="star" style="top:18%;left:82%;animation-delay:1.4s"></span>
+    <span class="star small" style="top:29%;left:42%;animation-delay:2.1s"></span>
+    <span class="star bright" style="top:36%;left:7%;animation-delay:2.1s"></span>
+    <span class="star small" style="top:43%;left:68%;animation-delay:.8s"></span>
+    <span class="star" style="top:54%;left:91%;animation-delay:.8s"></span>
+    <span class="star bright" style="top:64%;left:29%;animation-delay:2.8s"></span>
+    <span class="star small" style="top:72%;left:17%;animation-delay:2.8s"></span>
+    <span class="star" style="top:81%;left:88%;animation-delay:1.8s"></span>
+    <span class="star bright" style="top:88%;left:76%;animation-delay:1.8s"></span>
+    <span class="star small" style="top:95%;left:46%;animation-delay:3.2s"></span>
+    <span class="orbit"><i class="orbiter"></i></span>
+    <span class="orbit second"><i class="orbiter"></i></span>
+    <span class="nebula one"></span>
+    <span class="nebula two"></span>
+    <span class="nebula three"></span>
+    <span class="particle" style="left:8%;top:92%;--duration:23s;--delay:-4s"></span>
+    <span class="particle" style="left:19%;top:83%;--duration:18s;--delay:-12s"></span>
+    <span class="particle" style="left:31%;top:97%;--duration:25s;--delay:-8s"></span>
+    <span class="particle" style="left:44%;top:88%;--duration:20s;--delay:-15s"></span>
+    <span class="particle" style="left:57%;top:95%;--duration:22s;--delay:-3s"></span>
+    <span class="particle" style="left:69%;top:86%;--duration:17s;--delay:-10s"></span>
+    <span class="particle" style="left:81%;top:94%;--duration:24s;--delay:-17s"></span>
+    <span class="particle" style="left:93%;top:82%;--duration:19s;--delay:-6s"></span>
+    <span class="particle" style="left:14%;top:58%;--duration:27s;--delay:-19s"></span>
+    <span class="particle" style="left:74%;top:49%;--duration:21s;--delay:-13s"></span>
+    <span class="shooting-star"></span>
+    <span class="shooting-star two"></span>
+  </div>
+
+  <div class="page">
+    <header>
+      <h1>Voyage en orbite phénéthylaminienne</h1>
+      <p class="subtitle">Trip Report 2C-B avec Boub (20/11/26)</p>
+      <div class="ornament" aria-hidden="true"><span></span><b>✧</b><span></span></div>
+    </header>
+
+    <main>
+      <article class="story">
+        <p>Depuis un moment, nous avons envie de vivre une aventure psychédélique ensemble avec Gaspard.<br>
+        Pas pour planer, mais pour plonger.<br>
+        Pour toucher ces couches profondes de l'esprit que la parole ne peut pas toujours atteindre. Une sorte de rencontre avec nous-mêmes.<br>
+        L'idée est de découvrir le 2C-B, une molécule nouvelle pour nous deux, aux effets entre ceux de l’ecsta et de la psilocine, pour voir où elle pourrait nous emmener.</p>
+
+        <p>Et nous sommes loin d'imaginer à quel point ce qui nous attend va être phénoménal !</p>
+
+        <p>Vendredi 20 novembre, la journée commence de la manière la plus classique possible : un peu d'escalade, quelques heures de travail productif sur ma géométrie condi-variationnelle, puis une fin de journée au bord du lac de Vouglans, dans le van de Gaspard. Un endroit qu'il connaît bien, paisible.<br>
+        La pluie vient de s'arrêter, l'air est frais et le cadre est absolument parfait. Le set and setting est réuni.</p>
+
+        <p>Nous mangeons assez tôt, histoire de laisser notre estomac tranquille pour le voyage qui se prépare.<br>
+        Vers 21h30, on drop chacun un demi-comprimé. Direction l'orbite phénéthylaminienne.</p>
+
+        <p>La nuit est déjà tombée. Nous sortons marcher au bord du lac.<br>
+        Après une quarantaine de minutes, toujours aucun effet notable. Mais nous sommes bien, heureux d'être là, à profiter de l'instant à fond.<br>
+        Puis, sur le chemin du retour, quelque chose commence à changer.<br>
+        Mes jambes semblent avancer toutes seules, comme entraînées par un tapis roulant invisible.<br>
+        Ma vision passe progressivement de la HD à la 4K. Les détails deviennent plus nets, les contours plus précis, le contraste plus marqué.<br>
+        C'est subtil, mais je sens que quelque chose monte.</p>
+
+        <p>Une fois installés dans le van, sur le canapé, tout s'accélère.<br>
+        Ma tête devient incroyablement légère, comme si elle essayait discrètement de s'envoler.<br>
+        J'ai l'impression d'être remplie d'hélium. La sensation est délicieuse et ne fait que s'intensifier.<br>
+        La voix de Gaspard me paraît plus ronde, plus claire, presque enveloppante. Tout est doux.<br>
+        Je ressens une euphorie physique indescriptible, bien différente de l'excitation habituelle : je suis simplement incroyablement bien dans mon corps et dans ma tête. Plus aucun problème, plus aucune préoccupation. Toute mon attention est aspirée par ce moment, par la présence du garçon que j'aime.</p>
+
+        <p>Nous entreprenons ensuite une mission d'une difficulté absolument disproportionnée : faire fonctionner le robinet du van pour boire un verre d'eau.<br>
+        L'eau met une éternité à couler et nous sommes beaucoup trop perchés pour comprendre le fonctionnement de ce dispositif pourtant élémentaire.<br>
+        Cette petite aventure nous conduit finalement à une conversation passionnante.</p>
+
+        <p>Nous mettons un peu de musique, tamisons les lumières et nous blottissons l'un contre l'autre sous une couverture. L'ambiance est parfaite.<br>
+        Nous nous regardons dans les yeux et parlons pendant ce qui semble être une éternité.<br>
+        Je n'ai jamais eu l'impression de comprendre quelqu'un avec autant de fluidité.<br>
+        C'est clairement la discussion la plus plaisante et la plus complète que je n'aie jamais eue.<br>
+        Chaque mot résonne en moi, chaque pensée semble immédiatement accessible.<br>
+        C'est comme si nous avions enfin trouvé un langage commun, débarrassé de toutes les approximations habituelles de la communication humaine.</p>
+
+        <p>Peu à peu, mon champ de vision se resserre. Je ne vois presque plus que ses yeux. Le reste du monde disparaît.<br>
+        Il n'y a plus que lui, sa voix et cette présence incroyablement familière.<br>
+        Puis quelque chose d'étrange se produit.</p>
+
+        <p>Je le vois toujours en face de moi, mais j'ai en même temps l'impression d'être projetée dans un immense espace noir, infini, dépourvu de toute lumière.<br>
+        Nous sommes tous les deux dans cet espace, pas physiquement, mais comme si nos consciences y étaient transportées.<br>
+        Nous n'avons plus besoin de parler. Nos esprits semblent se rejoindre, s'entremêler, se superposer.<br>
+        Je ne sais plus vraiment où je finis et où il commence. Je suis lui, il est moi.<br>
+        Je ressens quelque chose de profondément pur. Une impression de fusion totale, presque spirituelle.<br>
+        Pour la première fois de ma vie, la notion d'âme me semble être autre chose qu'une jolie idée philosophique.<br>
+        J'ai la sensation de percevoir Gaspard au plus profond de son être, au-delà de ses mots, de ses gestes et même de sa personnalité.<br>
+        Comme si nous avions momentanément accès à quelque chose de beaucoup plus fondamental.</p>
+
+        <p>Soudain, je réalise un détail vertigineux : nous sommes toujours en train de discuter, mais nos deux bouches sont fermées.<br>
+        Nous avons continué à communiquer sans utiliser nos voix.</p>
+
+        <p>Je reviens alors brutalement à la réalité et lui demande s'il vient de vivre la même chose.<br>
+        Il me regarde, complètement abasourdi, et me décrit exactement le même espace noir, la même sensation de fusion de nos âmes, et retrace même notre discussion, sujet après sujet, en se rendant compte lui aussi que nous avons cessé de communiquer oralement depuis un certain temps.</p>
+
+        <p>Nous restons bouche bée. On se dit que c'est impossible, que la télépathie n'existe pas, mais on vient pourtant de le vivre.<br>
+        Nous sommes encore partiellement plongés dans cette autre dimension et en sortons par étapes.<br>
+        On discute de ce que nous venons de vivre et de la dimension absolument irréelle de cette expérience.<br>
+        On a la sensation d'avoir vu quelque chose d'interdit aux mortels. D'avoir visité un espace inaccessible aux gens ordinaires.<br>
+        Nous nous sentons presque coupables, comme si nous ne méritions pas d'avoir vécu quelque chose d'aussi extraordinaire.<br>
+        Il nous faut un moment pour redescendre de cette expérience.<br>
+        Nous restons à en discuter, encore partiellement immergés dans cet espace mystérieux, avant de tenter de nous coucher vers 1h du matin.</p>
+
+        <p>C'est là que commence une tout autre aventure : faire descendre le lit du van.<br>
+        Une tâche qui, dans des circonstances normales, ne demande que quelques secondes.<br>
+        Mais ce soir, nous sommes pris de fous rires.<br>
+        Je regarde mes mains et découvre des mains de bûcheron : elles sont gigantesques, incroyablement détaillées, presque trop réalistes.<br>
+        Puis je regarde mes orteils, avant de découvrir ceux de Gaspard.<br>
+        Chacun d'entre eux semble être un petit personnage indépendant, doté de sa propre histoire, de ses traumatismes et de ses aspirations.<br>
+        Plus je les regarde, plus je comprends leur vie.<br>
+        Au bout de quelques minutes, je les connais parfaitement. Ils ont tous un prénom, une personnalité et une histoire.<br>
+        Chaque pied forme une famille de cinq individus. Gaspard et moi avons littéralement adopté dix orteils.</p>
+
+        <p>Gaspard, lui, n'a toujours pas réussi à faire descendre le lit.<br>
+        Il me pose entre-temps des questions qui n’ont aucuns sens, encore plus à ce moment pour moi : « Le Y, est-ce que c'est le i de la langue grecque ? » ou encore « Tu trouves pas ça ouf que le mot “seul” puisse s'accorder au pluriel ? ».<br>
+        Nous sommes pliés de rire.<br>
+        Finalement, nous abandonnons toute ambition et nous réinstallons sur le canapé.</p>
+
+        <p>Blottis l'un contre l'autre, nous avons très envie de sexe, mais nous en sommes incapables.<br>
+        Nous continuons à discuter et à écouter de la musique jusqu'à nous en sentir prêts.<br>
+        Notre body load est particulièrement intense. Nos sensations sont tellement amplifiées que le moindre contact devient une expérience à part entière.<br>
+        Une caresse peut durer une éternité. Un regard suffit à provoquer une vague de tendresse. Nos respirations semblent se répondre, nos mouvements se synchroniser.<br>
+        Nous prenons le temps de nous redécouvrir, sans chercher à atteindre quoi que ce soit.<br>
+        C'est une intimité d'une douceur rare, presque méditative, dans laquelle chaque geste possède une profondeur nouvelle.<br>
+        J'ai l'impression que nos corps racontent à leur tour ce que nos esprits ont essayé de se dire quelques heures avant.</p>
+
+        <p>Après cette parenthèse sensuelle, je me sens incroyablement apaisée.<br>
+        Heureuse et remplie de gratitude d'avoir partagé ce moment simple, merveilleux, avec la personne que j'aime.</p>
+
+        <p>Les effets semblent progressivement s'atténuer.<br>
+        Nous décidons donc de fumer un joint roulé au préalable (en forme de mille-pattes).<br>
+        Et immédiatement, les effets du 2C-B semblent reprendre de plus belle, cette fois accompagnés du THC.</p>
+
+        <p>Je regarde par la fenêtre du van et mon imagination se transforme.<br>
+        Les surfaces semblent évoluer selon des flots de courbure moyenne, présentant des singularités comparables à celles des hypersurfaces stationnaires.<br>
+        Des structures multidimensionnelles se déploient progressivement, comme des variétés riemanniennes ou des géodesique de Finsler. Je vois des objets géométriques sous-contraints prennent vie sous mes yeux. C’est beau à pleurer.<br>
+        Et en même temps, j'entends distinctement le bruit d'une débroussailleuse qui semble sortir de l'évier, et deux femmes se disputent pour une place de parking quelque part dans le van.<br>
+        J'ai trois hallucinations simultanées et je ne sais absolument plus où donner de la tête.<br>
+        Je suis à nouveau pliée de rire.<br>
+        Tout va à une vitesse folle dans ma tête, mais contrairement à d'autres substances, je me sens parfaitement consciente que ces hallucinations sont les effets de la molécule.<br>
+        J'ai l'impression d'assister à un spectacle dont je connais les coulisses, sans pour autant pouvoir empêcher les décors de prendre vie.</p>
+
+        <p>À un moment, je regarde Gaspard tirer sur notre fameux joint mille-pattes.<br>
+        Le joint semble prendre vie entre ses doigts.<br>
+        Puis une mouche traverse mon champ de vision.<br>
+        Je sais pertinemment que c'est une mouche, mais mon cerveau, lui, a décidé qu'il s'agit d'un gigantesque vautour.<br>
+        Je le vois à l’intérieur du van, enrouler un thermique sous le plafonnier et déployer son immense silhouette.<br>
+        Quelques secondes plus tard, je me retrouve projetée dans une scène totalement différente : je vole en parapente aux côtés de ce vautour, au-dessus d'un paysage grandiose.</p>
+
+        <p>La nuit continue finalement de s'écouler au rythme de nos discussions, et de nos rires.<br>
+        Nous finissons par réussir à faire descendre le lit pour nous endormir paisiblement vers 3h30, ensemble.</p>
+
+        <p>Le lendemain, à 10h, contre toute attente, nous nous réveillons en pleine forme.<br>
+        Pas de fatigue particulière, pas de descente désagréable, simplement une sensation de bien-être et une joie presque enfantine de la vie.</p>
+
+        <p>Nous venons de découvrir une molécule incroyable, qui nous a certainement fait vivre l'une des expériences les plus marquantes de notre vie, et nous en sommes pleinement conscients.<br>
+        Nos vies vont souvent à mille à l'heure, rythmées par les heures passées à réfléchir aux propriétés géométriques variationnelles, à me tordre le cerveau sur des équations aux dérivées partielles, mais aussi par nos projets respectifs et notre passion commune pour la montagne.<br>
+        Cette nuit, nous prenions simplement le temps de nous laisser porter. De lâcher prise et de découvrir ce qui se passe lorsqu'on cesse, pour quelques heures, de vouloir tout maîtriser.<br>
+        Et finalement, peut-être que c'est aussi ça, vivre : s'autoriser à explorer des endroits inattendus, y compris en soi-même.<br>
+        Je ne sais toujours pas exactement ce qui s'est passé, mais quelque chose a définitivement bougé dans ma manière de voir le monde et de comprendre les liens qui nous unissent.</p>
+
+        <p class="closing">... Et cela va bien au-delà des mots</p>
+      </article>
+    </main>
+
+    <aside class="disclaimer">
+      <strong>ATTENTION !</strong>
+      Ceci est le récit de notre expérience personnelle et ne constitue en aucun cas une incitation à la consommation.<br>
+      Le 2C-B est une substance psychoactive illégale, aux effets puissants et parfois imprévisibles, qui peut comporter des risques, notamment en cas de mauvaise utilisation.<br>
+      Chacun est libre de ses choix. Il est important de s'informer et de ne pas banaliser la consommation. Cela vaut également pour d'autres substances plus courantes et parfois même légales :)<br>
+      <strong style="margin-top:8px; margin-bottom:0; letter-spacing:.04em; text-transform:none;">Trip safe</strong>
+    </aside>
+
+  </div>
+</body>
+</html>
